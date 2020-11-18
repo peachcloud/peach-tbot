@@ -11,3 +11,5 @@ telegram-bot = "0.7"
 dotenv = "0.15.0"
 futures = "0.3.7"
 tokio = { version = "0.2", features = ["macros", "time", "fs"] }
+imap = "2.3.0"
+native-tls = "0.2.6"
