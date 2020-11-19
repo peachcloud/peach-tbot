@@ -5,6 +5,11 @@ use futures::StreamExt;
 use telegram_bot::*;
 use telegram_bot::{Api, Message, SendMessage, MessageKind, UpdateKind};
 mod email;
+mod tele;
+use tele::TStruct;
+use std::result::Result;
+use std::{thread, time};
+
 
 
 #[tokio::main]
@@ -19,11 +24,30 @@ async fn main() -> Result<(), Error> {
     let imap_password = env::var("IMAP_PASSWORD").expect("imap password is not set");
     let telegram_log_id: i64 = env::var("TELEGRAM_LOG_ID").expect("TELEGRAM_LOG_ID is not set").parse().unwrap();
 
-    let chatId = ChatId::new(telegram_log_id);
-    let s:SendMessage = SendMessage::new(chatId, "very cool that this is working");
-    api.send(s).await?;
+    let t:  TStruct = TStruct::new(api, telegram_log_id);
+    t.test();
+    t.log("++ wgbot is online").await?;
 
-//    email::fetch_inbox_top(&imap_username, &imap_password);
+    loop {
+       println!("++ fetching new emails");
+       let email = email::fetch_inbox_top(&imap_username, &imap_password, &t);
+        match email {
+            Ok(v) => {
+                println!("positive result");
+                match v {
+                    Some(x) => {
+                        let log_msg = format!("++ new listing: {}", x);
+                        t.log(&log_msg).await?;
+                    }
+                    None => println!("None returned")
+                }
+            },
+            Err(e) => println!("error: {:?}", e),
+        }
+        let wait_time = time::Duration::from_millis(5000);
+        thread::sleep(wait_time);
+    }
+
 //
 //    // Fetch new updates via long poll method
 //    let mut stream = api.stream();
