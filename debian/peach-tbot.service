@@ -1,0 +1,15 @@
+[Unit]
+Description=peach-tbot
+
+Wants=network.target
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/peach-tbot
+Restart=always
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

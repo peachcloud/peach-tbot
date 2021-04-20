@@ -1,15 +1,29 @@
 [package]
-name = "wgbot"
+name = "peach-tbot"
 version = "0.1.0"
 authors = ["Max Fowler <maxhfowler@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[package.metadata.deb]
+depends = "$auto"
+extended-description = """\
+peach-tbot is a microservice to log IP address over telegram \
+"""
+maintainer-scripts="debian"
+systemd-units = { unit-name = "peach-tbot" }
+assets = [
+    ["target/release/peach-tbot", "usr/bin/", "755"],
+]
+
+
 [dependencies]
 telegram-bot = "0.7"
 dotenv = "0.15.0"
 futures = "0.3.7"
 tokio = { version = "0.2", features = ["macros", "time", "fs"] }
-imap = "2.3.0"
 native-tls = "0.2.6"
+pnet = "0.27.2"
+# Added due to reqwest dependency problems when cross-compiling for RPi
+openssl = { version = "0.10.32", features = ["vendored"] }
